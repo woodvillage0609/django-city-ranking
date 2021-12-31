@@ -1,0 +1,94 @@
+{% load static %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+{% load crispy_forms_tags %}
+<!-- 一番冒頭にこれを入れること。入れないと、staticが読み込まれない。 -->
+
+<html lang="ja"> 
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<!-- staticフォルダのcssファイル反映 -->
+<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+<script type="text/javascript" src="{% static 'js/main.js' %}"></script>
+<!-- Chart.jsを読み込む-->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+
+
+<title>駅力ランキング</title>
+
+</head>
+
+
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12" style="position:fixed;z-index:10;">
+
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                
+                <a class="navbar-brand" href="{% url 'score-home' %}">駅力ランキング
+                </a>
+                <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item active">
+                            <a class="nav-link" href="{% url 'score-home' %}">Clear<span class="sr-only">(current)</span></a>
+                        </li>
+                    </ul>
+                </div> -->
+
+            </nav>
+            
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-lg-2 col-md-0 sidebar">
+            <br>
+                <form action="{% url 'score-home' %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        
+                        <div class="col-lg-12 col-md-6 col-sm-12">
+                            {{ form.name|as_crispy_field }}
+                        </div>
+                        <div class="col-lg-12 col-md-6 col-sm-12">
+                            {{ form.name_sub|as_crispy_field }}
+                        </div>
+                        
+                        <div class="col-md-12">
+                            <div class="overflow">
+                                <ul>
+                                {% for i in form.choice %}
+                                <li>{{i}}</li>
+                                {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    
+                    </div>
+                    <br>
+                    <input type="submit" value="グラフ作成" class="btn btn-dark">
+                </form>
+        </div>
+
+        <div class="col-lg-2 col-md-0" style="height:100%;"></div>
+
+        <div class="col-lg-10 col-md-12 graphs">
+        {% block content %}
+
+        {% endblock %}
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

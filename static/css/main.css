@@ -1,0 +1,78 @@
+/* 全体 */
+html, body {
+    height:100%;
+}
+
+li {
+	list-style:none;
+	margin:0px;
+  list-style-position:none;
+}
+
+ul{
+	padding:0px;
+	margin:0px;
+}
+
+.grey {
+  color:grey;
+}
+
+.graphs {
+  margin-top:50px;
+}
+
+/* Home */
+
+.main-content {
+    padding-top:30px;
+    width:100%;
+}
+
+.summary {
+  text-align:center;
+  font-size:25px;
+  border-radius:5px;
+}
+
+.sidebar {
+  border-right:1px solid grey;
+  position:fixed;
+  margin-top:55px;
+  z-index:9;
+  height:100%;
+}
+
+.overflow {
+  height:350px;
+  overflow-y:scroll;
+}
+
+
+/* スマートフォン&タブレット向けレイアウト */
+/* ブレイクポイントをmax-width:992pxに指定 */
+@media(max-width:992px){
+
+  .graphs {
+    margin-top:0px;
+  }
+
+  .sidebar {
+    margin-top:55px;
+    position:static;
+  }
+
+  .overflow {
+    height:auto;
+    overflow-y:scroll;
+    padding-top:15px;
+}
+ .overflow ul li {
+   float:left;
+   padding:0px 15px 0px 0px;
+ }
+.round-graph {
+    padding-bottom:30px;
+}
+
+}

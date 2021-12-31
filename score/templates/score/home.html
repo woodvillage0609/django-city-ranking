@@ -1,0 +1,601 @@
+{% extends 'score/base.html' %}
+{% block content %}
+
+{% load crispy_forms_tags %}
+<div class="main-content">
+    
+
+    <script>
+        var items = [];
+        var scores = [];
+        var scores_sub =[];
+        var averages = [];
+        var name = "{{name}}";
+        var name_sub = "{{name_sub}}";
+        var total_cities = [];
+        var total_scores = [];
+        
+    </script>
+
+
+    {% for i in items %}
+    <script>
+        items.push("{{i}}")
+    </script>
+    {% endfor %}
+
+    {% for i in scores %}
+    <script>
+        scores.push("{{i}}")
+    </script>
+    {% endfor %}
+
+    {% for i in scores_sub %}
+    <script>
+        scores_sub.push("{{i}}")
+    </script>
+    {% endfor %}
+
+    {% for i in averages %}
+    <script>
+        averages.push("{{i}}")
+    </script>
+    {% endfor %}
+
+    {% for interval in total_cities %}
+    <script>
+        total_cities.push({{interval|safe}})
+    </script>
+    {% endfor %}
+
+    {% for inter_score in total_scores %}
+    <script>
+        total_scores.push({{inter_score}})
+    </script>
+    {% endfor %}
+
+    <!-- 地図にプロット -->
+
+    <div class="row">
+
+        <div class="col-md-12">
+            <li style="font-size:20px;text-align:center;color:rgb(95, 94, 94);">
+                <p><strong>「{{name}}」駅周辺</strong></p>
+            </li>
+
+            <div id="map1" style="height:500px;" ></div>
+        </div>
+
+
+        <div class="col-md-12">
+            <br>
+            <li style="font-size:20px;text-align:center;color:rgb(95, 94, 94);">
+                <p><strong>「{{name_sub}}」駅周辺</strong></p>
+            </li>
+
+            <div id="map2" style="height:500px;" ></div>
+        </div>
+
+            <script>
+                var map1;
+                var map2;
+                function initMap() {
+
+                // マップ①の表示
+                    map1 = new google.maps.Map(document.getElementById('map1'), {
+                    
+                    {% for x, y in station_1 %}
+                    center: {lat: {{x}}, lng:{{y}}},
+                    {% endfor %}
+                    zoom: 16,
+
+                    });
+
+                    map2 = new google.maps.Map(document.getElementById('map2'), {
+                    
+                    {% for x, y in station_2 %}
+                    center: {lat: {{x}}, lng:{{y}}},
+                    {% endfor %}
+                    zoom: 16,
+
+                    });
+                
+                    {% for a,b,c,d,e in location_zipped %}
+
+                    (function(){
+
+                    var contentString = 
+                    '<a><strong>{{a}}</strong></a>'+
+                    '<br>'+
+                    '<a>{{b}}</a>'; 
+
+                    var infowindow = new google.maps.InfoWindow({
+                        content: contentString
+                    });
+                    
+                    var markerIcon = {
+                        {% if e == 'スターバックスコーヒー' %}
+                        url: 'https://cdn4.iconfinder.com/data/icons/flat-brand-logo-2/512/starbucks-1024.png',
+                        {% elif e == 'スーパーマーケット' %}
+                        url: 'https://cdn1.iconfinder.com/data/icons/business-finance-vol-16-1/512/37_Bag_commerce_shopping-1024.png',
+                        {% elif e == 'KFC' %}
+                        url: 'https://cdn0.iconfinder.com/data/icons/logos-21/40/KFC-512.png',
+                        {% elif e == 'マクドナルド' %}
+                        url: 'https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/86-mcdonalds-1024.png',
+                        {% elif e == '神社' %}
+                        url: 'https://cdn1.iconfinder.com/data/icons/landmark-flat/512/torii_gate-japan-landmark-temple-gate-1024.png',
+                        {% elif e == '公園' %}
+                        url: 'https://cdn1.iconfinder.com/data/icons/city-filled-outline-1/512/spherical_nature_tree_park_plant-1024.png',
+                        {% elif e == '小学校' or e == '中学校' %}
+                        url: 'https://cdn3.iconfinder.com/data/icons/education-209/64/graduation-square-academic-cap-school-1024.png',
+                        {% elif e == 'ブルーボトルコーヒー' %}
+                        url: 'https://cdn3.iconfinder.com/data/icons/cafe-and-restaurant-7/32/Coffee_cup-1024.png',
+                        {% elif e == '成城石井' %}
+                        url: 'https://cdn1.iconfinder.com/data/icons/business-finance-vol-16-1/512/55_Basket_cart_commerce_shopping_basket-1024.png',
+                        {% elif e == '無印良品' %}
+                        url: 'https://cdn1.iconfinder.com/data/icons/sales-and-shopping/32/special_save_items_sved_merchandise-1024.png',
+                        {% else %}
+                        url: 'https://cdn4.iconfinder.com/data/icons/iconsimple-places/512/pin_1-512.png',
+                        {% endif %}
+                        scaledSize: new google.maps.Size(40, 40),
+                        origin: new google.maps.Point(0, 0),
+                        anchor: new google.maps.Point(10,45)
+                    }
+                    
+
+                    var marker1 = new google.maps.Marker({
+                        position: {lat: {{c}}, lng: {{d}}},
+                        map: map1,
+                        icon: markerIcon,
+                        title: contentString,
+                        animation: google.maps.Animation.DROP
+                    });
+
+                    var marker2 = new google.maps.Marker({
+                        position: {lat: {{c}}, lng: {{d}}},
+                        map: map2,
+                        icon: markerIcon,
+                        title: contentString,
+                        animation: google.maps.Animation.DROP
+                    });
+
+                    lastWindow=null; 
+
+                    marker1.addListener('click', function() {
+                            if (lastWindow) lastWindow.close();
+                            infowindow.open(map1, marker1);
+                            lastWindow=infowindow;
+                        });
+
+                    marker2.addListener('click', function() {
+                        if (lastWindow) lastWindow.close();
+                        infowindow.open(map2, marker2);
+                        lastWindow=infowindow;
+                    });
+
+                    })();
+
+                    {% endfor %}
+            
+                }
+
+            </script>
+
+    </div>
+
+    <br>
+    <br>
+
+    <!-- 総合点のランキング表示 -->
+
+    <div class="row">
+        <div class="col-md-4 col-sm-12">
+            <div class="p-3 mb-2 bg-danger text-white summary">
+                <li>{{name}}</li>
+                <table class="text-white" style="width:100%;font-size:25px;">
+                    <tr>
+                        <td style="text-align:right;padding-right:10px;font-size:15px;">ランキング :</td>
+                        <td><strong>{{ranking}}位</strong> /<a style="font-size:15px;"> 650位</a></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:right; padding-right:10px;font-size:15px;">合計 :</td>
+                        <td><strong>{{sum_scores|floatformat}}点</strong> /<a style="font-size:15px;"> {{sum_averages|floatformat}}点 (平均)</a></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-12">
+            <div class="p-3 mb-2 bg-success text-white summary">
+                <li>{{name_sub}}</li>
+                <table class="text-white" style="width:100%;font-size:25px;">
+                    <tr>
+                        <td style="text-align:right;padding-right:10px;font-size:15px;">ランキング :</td>
+                        <td><strong>{{ranking_sub}}位</strong> /<a style="font-size:15px;"> 650位</a></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:right; padding-right:10px;font-size:15px;">合計 :</td>
+                        <td><strong>{{sum_scores_sub|floatformat}}点</strong> /<a style="font-size:15px;"> {{sum_averages|floatformat}}点 (平均)</a></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-12">
+            <div class="p-3 mb-2 bg-primary text-white summary">
+                <li>全地域</li>
+                <table class="text-white" style="width:100%;font-size:25px;">
+                    <tr>
+                        <td style="text-align:right;padding-right:10px;font-size:15px;">駅数合計 :</td>
+                        <td><strong>{{stations|length}}駅</strong></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:right; padding-right:10px;font-size:15px;">全国平均 :</td>
+                        <td><strong>{{sum_averages|floatformat}}点</strong></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <br>
+    <br>
+
+    <!-- 円グラフ①を作成 -->
+
+    <div class="row">
+        <div class="col-md-6 col-sm-12 round-graph">
+            
+            <li style="font-size:20px;text-align:center;color:rgb(95, 94, 94);">
+                <p><strong>「{{name}}」 vs 「平均値」</strong></p>
+            </li>
+
+            <canvas id="radar-chart" height="250"></canvas>
+            
+            <script type="text/javascript">
+            /* idが"radar-chart"の要素を取得 */
+            var ctx = document.getElementById("radar-chart"); 
+            /* 上記要素にチャートを描画 */
+            var myRadarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: items,
+                    datasets: [
+                        {
+                            label: name,
+                            data: scores,
+                            backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                            borderColor: 'rgba(255, 99, 132, 0.9)',
+                            pointBackgroundColor: 'rgba(255, 99, 132, 0.9)',
+                            pointBorderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 2,
+                            pointRadius: 3,
+                        },
+                        {
+                            label: "平均値",
+                            data: averages,
+                            backgroundColor: 'rgba(0, 0, 255, 0.4)',
+                            borderColor: 'rgba(0, 0, 255, 0.6)',
+                            pointBackgroundColor: 'rgba(0, 0, 255, 0.6)',
+                            pointBorderColor: 'rgba(0, 0, 255, 1)',
+                            borderWidth: 2,
+                            pointRadius: 3,
+                        },
+                ]},
+                options : {
+                    animation: { duration: 1500 },
+                    legend: {display:true,
+                            labels:{fontSize:14},
+                            },
+                    scale: {
+                        pointLabels: {
+                            fontSize:14,
+                        },
+                        ticks: {
+                            min: 0,
+                            max: 100,
+                            stepSize: 10,
+                            backdropColor: 'rgba(255, 255, 255, 1)',
+                            fontSize:14,
+                        }}
+                }
+            });
+
+            </script>
+        </div>
+        <br>
+        <br>
+
+    <!-- 円グラフ②を作成 -->
+        <div class="col-md-6 col-sm-12">
+
+            <li style="font-size:20px;text-align:center;color:rgb(95, 94, 94);">
+                <p><strong>「{{name}}」 vs 「{{name_sub}}」 </strong></p>
+            </li>
+
+            <canvas id="radar-chart_2" height="250"></canvas>
+
+            <script type="text/javascript">
+                /* idが"radar-chart"の要素を取得 */
+                var ctx = document.getElementById("radar-chart_2"); 
+                /* 上記要素にチャートを描画 */
+                var myRadarChart = new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: items,
+                        datasets: [
+                            {
+                                label: name,
+                                data: scores,
+                                backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                                borderColor: 'rgba(255, 99, 132, 0.9)',
+                                pointBackgroundColor: 'rgba(255, 99, 132, 0.9)',
+                                pointBorderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 2,
+                                pointRadius: 3,
+                            },
+                            {
+                                label: name_sub,
+                                data: scores_sub,
+                                backgroundColor: 'rgba(45, 230, 21, 0.4)',
+                                borderColor: 'rgba(45, 230, 21, 0.6)',
+                                pointBackgroundColor: 'rgba(45, 230, 21, 0.6)',
+                                pointBorderColor: 'rgba(45, 230, 21, 1)',
+                                borderWidth: 2,
+                                pointRadius: 3,
+                            },
+                    ]},
+                    options : {
+                        animation: { duration: 1500 },
+                        legend: {display:true,
+                                labels:{fontSize:14},
+                                },
+                        scale: {
+                            pointLabels: {
+                                fontSize:14,
+                            },
+                            ticks: {
+                                min: 0,
+                                max: 100,
+                                stepSize: 10,
+                                backdropColor: 'rgba(255, 255, 255, 1)',
+                                fontSize:14,
+                            }}
+                    }
+                });
+
+                </script>
+
+        </div>
+    </div>
+    <br>
+    <br>
+
+    <!-- 棒グラフ -->
+    <div class="row">
+        <div class="col-md-12 col-sm-0">
+            <canvas id="score-bar"></canvas>
+
+            <script type="text/javascript">
+    
+                /* idが"bar-chart"の要素を取得 */
+                var ctx = document.getElementById("score-bar");
+            
+                /* 上記要素にチャートを描画　*/
+                var myRadarChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: items,
+                        datasets: [
+                        {
+                            type:'line',
+                            label: "全国平均",
+                            data: averages,
+                            fill: false,
+                            backgroundColor: 'rgba(0, 0, 255, 0.4',
+                            borderColor: 'rgba(0, 0, 255, 0.6)',
+                            borderWidth: 2,
+                        },
+                        {
+                            type:'bar',
+                            label: name,
+                            data: scores,
+                            fill: false,
+                            backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                            borderColor: 'rgba(255, 99, 132, 0.9)',
+                            borderWidth: 2,
+                        },
+                        {
+                            type:'bar',
+                            label: name_sub,
+                            data: scores_sub,
+                            fill: false,
+                            backgroundColor: 'rgba(45, 230, 21, 0.4)',
+                            borderColor: 'rgba(45, 230, 21, 0.8)',
+                            borderWidth: 2,
+                        },
+
+                        ],
+                            },
+                    options : {
+                        animation: { duration: 1500 },
+                        legend: {display:true,
+                                labels:{fontSize:14},
+                                position:'bottom',
+                                },
+                        title: {display:true,
+                                fontSize:18,
+                                text:"「"+name+"」と「"+name_sub+"」の比較",
+                                },
+                        scales: {
+                            yAxes: [{
+                                ticks:{ min:0, 
+                                        max:100,
+                                        stepSize: 20,
+                                        fontSize:14,
+                                    },
+                                    }],
+                            xAxes: [{
+                                ticks:{
+                                    fontSize:11,
+                                }
+                            }]
+                    },
+                    }
+                });
+    
+                </script>
+        </div>
+    </div>
+        <br>
+        <br>
+<!-- テーブル②を作成 -->
+    <!-- 上位20駅を表示 -->
+    <div class="row">
+        <div class="col-md-12">
+        <li style="font-size:20px;text-align:center;color:rgb(95, 94, 94);">
+            <p><strong>総合得点 上位・下位15駅</strong></p>
+        </li>
+        </div>
+        <div class="col-md-6">
+            <table class="table table-striped">
+                <thead class="thead-dark">
+                <tr>
+                    <th scope="col">上位 15位</th>
+                    <th scope="col">駅名</th>
+                    <th scope="col">総合点数</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                    {% for x,y in scores_top_ranking|slice:":15" %}
+                <tr>
+                    <td>{{forloop.counter}}位</td>
+                    <td>{{y}}</td>
+                    <td>{{x|floatformat:0}}点</td>
+                </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <!-- 下位20駅を表示 -->
+        <div class="col-md-6">
+                <table class="table table-striped">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">下位 15位</th>
+                        <th scope="col">駅名</th>
+                        <th scope="col">総合点数</th>
+    
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {% for x,y in scores_bottom_ranking|slice:":15" %}
+                    <tr>
+                        <td>{{forloop.counter}}位</td>
+                        <td>{{y}}</td>
+                        <td>{{x|floatformat:0}}点</td>
+                    </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+        </div>
+    </div>
+    <br>
+    <br>
+<!-- 各アイテムのランキング（バーチャート） -->
+    <div class="row">
+        <div class="col-md-12">
+            <li style="font-size:20px;text-align:center;color:rgb(95, 94, 94);">
+                <p><strong>各項目別上位・下位10駅</strong></p>
+            </li>
+        </div>
+        {% for x,y in ranking_zipped %}
+        <div class="col-md-4" style="padding-bottom:30px;">
+            <canvas id="bar-chart{{forloop.counter0}}" height="500"></canvas>
+
+            <div style="text-align:center;">
+                <strong>
+                    <li>
+                    <a style="font-size:16px;color:rgb(95, 94, 94);">「{{name}}」駅 :</a>
+                         <a style="color:rgb(255,0,0,0.6)"> {{x}} 位</a>
+                         <a style="font-size:12px;color:rgb(95, 94, 94);"> / {{stations|length}}駅中</a>
+                    </li>
+                    <li>
+                        <a style="font-size:16px;color:rgb(95, 94, 94);">「{{name_sub}}」駅 :</a>
+                             <a style="color:rgba(54, 180, 54, 0.8)"> {{y}} 位</a>
+                             <a style="font-size:12px;color:rgb(95, 94, 94);"> / {{stations|length}}駅中</a>
+                        </li>
+                </strong>
+            </div>
+
+            <script type="text/javascript">
+
+            var datasets = [
+            {
+                label: items[{{forloop.counter0}}],
+                data: total_scores[{{forloop.counter0}}],
+                fill: false,
+                backgroundColor: ['rgba(255, 99, 132, 0.6)'],
+                borderColor: ['rgba(255, 99, 132, 0.9)'],
+                borderWidth: 2,
+            }
+            ]
+
+            for (var i = 0; i < datasets[0].data.length; i++) {
+            if (datasets[0].data[i] > 50) {
+                datasets[0].backgroundColor[i] = 'rgba(255, 99, 132, 0.6)' // 値が50以上の場合は青
+                datasets[0].borderColor[i] = 'rgba(255, 99, 132, 0.9)'
+
+            } else {
+                datasets[0].backgroundColor[i] = 'rgba(0, 0, 255, 0.4)' // 値が50以下の場合は赤
+                datasets[0].borderColor[i] = 'rgba(0, 0, 255, 0.6)'
+            }
+            }
+
+            /* idが"bar-chart"の要素を取得 */
+            var ctx = document.getElementById("bar-chart"+{{forloop.counter0}});
+        
+            /* 上記要素にチャートを描画　*/
+            var myRadarChart = new Chart(ctx, {
+                type: 'horizontalBar',
+                data: {
+                    labels: total_cities[{{forloop.counter0}}],
+                    datasets: datasets
+                        },
+                options : {
+                    animation: { duration: 1500 },
+                    legend: {display:false,
+                            labels:{fontSize:14},
+                            },
+                    title: {display:true,
+                            fontSize:15,
+                            text:items[{{forloop.counter0}}],
+                            },
+                    scales: {
+                        xAxes: [{
+                            ticks:{ min:0, 
+                                    max:100,
+                                    stepSize: 20,
+                                },
+                                }],
+                        yAxes: [{
+                            ticks:{
+                                fontSize:14,
+                            }
+                        }]
+                },
+                }
+            });
+
+            </script>
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+  <!-- GoogleMap表示用 -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBTc38KnsEtHKwTSOB28FsLEdi156ogLmk&callback=initMap"
+  async defer></script>
+
+{% endblock %}
