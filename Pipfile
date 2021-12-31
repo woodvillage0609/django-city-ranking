@@ -9,6 +9,12 @@ django-multiselectfield = "*"
 django-bootstrap4 = "*"
 django-crispy-forms = "*"
 pandas = "*"
+django-heroku = "*"
+gunicorn = "*"
+dj-database-url = "*"
+whitenoise = "*"
+psycopg2 = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 
