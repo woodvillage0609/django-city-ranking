@@ -21,12 +21,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '0jbc-&3ft0s9m7&0(3w!0a$2i1qz&u+*sa%h5i10$bnc7pi=fw'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -53,6 +52,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    #追加
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -85,12 +86,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 
 # Password validation
@@ -132,6 +133,13 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
+#whitenoseが必要
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
+#Herokuでのデプロイに必要なため追加。
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
@@ -140,4 +148,22 @@ DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
-# GOOGLE_MAPS_API_KEY = 'AIzaSyBTc38KnsEtHKwTSOB28FsLEdi156ogLmk'
+
+import dj_database_url
+db_from_env = dj_database_url.config()
+DATABASES = {'default': dj_database_url.config()}
+
+
+try:
+    from .local_settings import *
+except ImportError:
+    pass
+
+#本番環境において、以下が適応される。AWSの設定もここに追加しよう。
+if not DEBUG:
+
+    SECRET_KEY = os.environ['SECRET_KEY']
+
+    #Herokuデプロイに必要なため追加
+    import django_heroku
+    django_heroku.settings(locals())
