@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -149,7 +149,7 @@ DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
-# GOOGLE_MAPS_API_KEY = os.environ['GOOGLE_MAPS_API_KEY']
+GOOGLE_MAPS_API_KEY = os.environ['GOOGLE_MAPS_API_KEY']
 
 
 import dj_database_url
@@ -166,7 +166,6 @@ except ImportError:
 if not DEBUG:
 
     SECRET_KEY = os.environ['SECRET_KEY']
-    GOOGLE_MAPS_API_KEY = os.environ['GOOGLE_MAPS_API_KEY']
 
     #Herokuデプロイに必要なため追加
     import django_heroku
