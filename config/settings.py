@@ -149,7 +149,7 @@ DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
-GOOGLE_MAPS_API_KEY = os.environ['GOOGLE_MAPS_API_KEY']
+# GOOGLE_MAPS_API_KEY = os.environ['GOOGLE_MAPS_API_KEY']
 
 
 import dj_database_url
@@ -166,6 +166,7 @@ except ImportError:
 if not DEBUG:
 
     SECRET_KEY = os.environ['SECRET_KEY']
+    GOOGLE_MAPS_API_KEY = os.environ['GOOGLE_MAPS_API_KEY']
 
     #Herokuデプロイに必要なため追加
     import django_heroku
