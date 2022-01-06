@@ -149,6 +149,8 @@ DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
+GOOGLE_MAPS_API_KEY = os.environ['GOOGLE_MAPS_API_KEY']
+
 
 import dj_database_url
 db_from_env = dj_database_url.config()
